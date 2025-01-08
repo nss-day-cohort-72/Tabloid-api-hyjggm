@@ -93,7 +93,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public IActionResult DeleteCategory(int id)
     {
         Category foundCategory = _dbContext.Categories
