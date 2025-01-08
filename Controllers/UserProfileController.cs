@@ -32,6 +32,7 @@ public class UserProfileController : ControllerBase
     {
         return Ok(_dbContext.UserProfiles
         .Include(up => up.IdentityUser)
+        .OrderBy(up => up.IdentityUser.UserName)
         .Select(up => new UserProfile
         {
             Id = up.Id,
