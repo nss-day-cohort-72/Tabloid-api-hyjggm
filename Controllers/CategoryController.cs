@@ -92,6 +92,24 @@ public class CategoryController : ControllerBase
 
     }
 
+    [HttpDelete("{id}")]
+    // [Authorize(Roles = "Admin")]
+    public IActionResult DeleteCategory(int id)
+    {
+        Category foundCategory = _dbContext.Categories
+        .FirstOrDefault(c => c.Id == id);
+
+        if (foundCategory == null)
+        {
+            return NotFound();
+        }
+
+        _dbContext.Remove(foundCategory);
+        _dbContext.SaveChanges();
+        return NoContent();
+
+    }
+
 
 
     
