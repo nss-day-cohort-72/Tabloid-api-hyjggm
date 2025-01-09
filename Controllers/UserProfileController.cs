@@ -44,7 +44,8 @@ public class UserProfileController : ControllerBase
             Roles = _dbContext.UserRoles
             .Where(ur => ur.UserId == up.IdentityUserId)
             .Select(ur => _dbContext.Roles.SingleOrDefault(r => r.Id == ur.RoleId).Name)
-            .ToList()
+            .ToList(),
+            IsDeactivated = up.IsDeactivated
         }));
     }
 
@@ -100,6 +101,25 @@ public class UserProfileController : ControllerBase
             .Select(ur => _dbContext.Roles.SingleOrDefault(r => r.Id == ur.RoleId).Name)
             .ToList();
         
+        
+        
         return Ok(user);
     }
+
+    [HttpPut("deactivate/{id}")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult DeactivateUser(int id)
+    {
+        var userProfile = _dbContext.UserProfiles.Find(id);
+        if (userProfile == null)
+        {
+            return NotFound(new { Message = "User not found" });
+        }
+
+        userProfile.IsDeactivated = true;
+        _dbContext.SaveChanges();
+
+        return Ok(new { Message = "User successfully deactivated" });
+    }
+
 }

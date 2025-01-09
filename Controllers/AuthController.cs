@@ -40,6 +40,14 @@ public class AuthController : ControllerBase
             string password = creds.Substring(separator + 1);
 
             var user = _dbContext.Users.Where(u => u.Email == email).FirstOrDefault();
+            // Fetch the associated UserProfile
+            var userProfile = _dbContext.UserProfiles.SingleOrDefault(up => up.IdentityUserId == user.Id);
+
+                        // Check if the user is deactivated
+            if (userProfile?.IsDeactivated == true)
+            {
+                return Unauthorized(new { Message = "User account is deactivated." });
+            }
             var userRoles = _dbContext.UserRoles.Where(ur => ur.UserId == user.Id).ToList();
             var hasher = new PasswordHasher<IdentityUser>();
             var result = hasher.VerifyHashedPassword(user, user.PasswordHash, password);

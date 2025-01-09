@@ -41,6 +41,7 @@ public class UserProfile
             return $"{FirstName} {LastName}";
         }
     }
+    public bool IsDeactivated {get ; set;} // New property to track deactivation
 
     public List<Post> Posts {get; set;} = new List<Post>();
     public List<PostSubscription> PostSubscriptions {get; set;} = new List<PostSubscription>();
