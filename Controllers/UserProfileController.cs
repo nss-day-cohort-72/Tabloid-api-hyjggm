@@ -51,13 +51,27 @@ public class UserProfileController : ControllerBase
 
     [HttpPost("promote/{id}")]
     [Authorize(Roles = "Admin")]
-    public IActionResult Promote(string id)
+    public IActionResult Promote(int id)
     {
+
+          // Find the UserProfile by ID
+        var userProfile = _dbContext.UserProfiles.SingleOrDefault(up => up.Id == id);
+         
+          if (userProfile == null)
+          {
+            return NotFound(new { Message = "UserProfile not found." });
+          }
+            // Get the corresponding AspNetUsers ID
+        string aspNetUserId = userProfile.IdentityUserId;
+
+
+       
+
         IdentityRole role = _dbContext.Roles.SingleOrDefault(r => r.Name == "Admin");
         _dbContext.UserRoles.Add(new IdentityUserRole<string>
         {
             RoleId = role.Id,
-            UserId = id
+            UserId = aspNetUserId
         });
         _dbContext.SaveChanges();
         return NoContent();
@@ -65,8 +79,19 @@ public class UserProfileController : ControllerBase
 
     [HttpPost("demote/{id}")]
     [Authorize(Roles = "Admin")]
-    public IActionResult Demote(string id)
+    public IActionResult Demote(int id)
     {
+
+         // Find the UserProfile by ID
+        var userProfile = _dbContext.UserProfiles.SingleOrDefault(up => up.Id == id);
+         
+          if (userProfile == null)
+          {
+            return NotFound(new { Message = "UserProfile not found." });
+          }
+            // Get the corresponding AspNetUsers ID
+        string aspNetUserId = userProfile.IdentityUserId;
+        
         IdentityRole role = _dbContext.Roles
             .SingleOrDefault(r => r.Name == "Admin");
 
@@ -74,7 +99,7 @@ public class UserProfileController : ControllerBase
             .UserRoles
             .SingleOrDefault(ur =>
                 ur.RoleId == role.Id &&
-                ur.UserId == id);
+                ur.UserId == aspNetUserId);
 
         _dbContext.UserRoles.Remove(userRole);
         _dbContext.SaveChanges();
@@ -137,5 +162,8 @@ public class UserProfileController : ControllerBase
 
         return Ok(new { Message = "User successfully activated" });
     }
+
+
+
 
 }
