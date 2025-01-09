@@ -122,4 +122,20 @@ public class UserProfileController : ControllerBase
         return Ok(new { Message = "User successfully deactivated" });
     }
 
+    [HttpPut("activate/{id}")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult ActivateUser(int id)
+    {
+        var userProfile = _dbContext.UserProfiles.Find(id);
+        if (userProfile == null)
+        {
+            return NotFound(new { Message = "User not found" });
+        }
+
+        userProfile.IsDeactivated = false;
+        _dbContext.SaveChanges();
+
+        return Ok(new { Message = "User successfully activated" });
+    }
+
 }
