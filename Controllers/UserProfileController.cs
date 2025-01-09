@@ -164,6 +164,43 @@ public class UserProfileController : ControllerBase
     }
 
 
+    [HttpPost("{id}/upload-avatar")]
+    public async Task<IActionResult> UploadAvatar(int id, [FromForm] IFormFile file)
+    {
+        var userProfile = _dbContext.UserProfiles.SingleOrDefault(up => up.Id == id);
+        if (userProfile == null)
+        {
+            return NotFound(new { Message = "User profile not found." });
+        }
+
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new { Message = "Invalid file." });
+        }
+
+        var uploadsFolder = Path.Combine("wwwroot", "uploads", "avatars");
+        if (!Directory.Exists(uploadsFolder))
+        {
+            Directory.CreateDirectory(uploadsFolder);
+        }
+
+        var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
+        var filePath = Path.Combine(uploadsFolder, fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        // Update the user's profile with the image location
+        userProfile.ImageLocation = $"/uploads/avatars/{fileName}";
+        _dbContext.SaveChanges();
+
+        return Ok(new { Message = "Avatar uploaded successfully.", ImageLocation = userProfile.ImageLocation });
+    }
+
+
+
 
 
 }
