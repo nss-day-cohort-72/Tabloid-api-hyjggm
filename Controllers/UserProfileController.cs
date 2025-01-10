@@ -135,7 +135,8 @@ public class UserProfileController : ControllerBase
     [Authorize(Roles = "Admin")]
     public IActionResult DeactivateUser(int id)
     {
-        var userProfile = _dbContext.UserProfiles.Find(id);
+
+       var userProfile = _dbContext.UserProfiles.Find(id);
         if (userProfile == null)
         {
             return NotFound(new { Message = "User not found" });
